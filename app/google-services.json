@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "627180736074",
+    "project_id": "simpleapp-c51ca",
+    "storage_bucket": "simpleapp-c51ca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:627180736074:android:3b60b64ffbcf913d72a0b3",
+        "android_client_info": {
+          "package_name": "com.example.traction6"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "627180736074-1i65vi5t6fspaflkhvqn9j1nui4vh7ag.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHVXHYF1DSz33wN4NYaqQ67QOJNWxNhmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "627180736074-1i65vi5t6fspaflkhvqn9j1nui4vh7ag.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
