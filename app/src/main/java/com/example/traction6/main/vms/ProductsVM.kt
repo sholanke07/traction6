@@ -14,10 +14,15 @@ class ProductsVM :ViewModel() {
 
     val productBarcode = MutableLiveData<DataStates>()
     private val compositeDisposable = CompositeDisposable()
-val uiFields : LiveData<MutableList<UIField>> = MutableLiveData()
+    val uiFields: LiveData<MutableList<UIField>> = MutableLiveData()
+   // lateinit var recyclerListData: MutableLiveData<barcodelist>
 
-    // val barcodeField = itemFactoryAdapter.fieldWithKey(ProductFactory.Keys.BarcodeKey)
 
+   /* fun createOrUpdateProduct(itemFactoryAdapter: UIFactoryAdapter) {
+
+        val barcodeField = itemFactoryAdapter.fieldWithKey(ProductFactory.Keys.BarcodeKey)
+
+    }
 
     fun updateBarcodeField(factoryAdapter: UIFactoryAdapter, barcode: String) {
         (factoryAdapter.fieldWithKey(ProductFactory.Keys.BarcodeKey) as? BarcodeField)?.let {
@@ -28,7 +33,7 @@ val uiFields : LiveData<MutableList<UIField>> = MutableLiveData()
 
             }
         }
-    }
-
-
+    }*/
 }
+
+

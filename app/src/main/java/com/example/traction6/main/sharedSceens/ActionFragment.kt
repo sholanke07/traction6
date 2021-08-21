@@ -1,15 +1,13 @@
 package com.example.traction6.main.sharedSceens
 
-import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.example.domain.exts.message
 import com.example.traction6.R
-import com.example.traction6.main.ScanBarcodeFragment
-import com.example.traction6.main.ScanBarcodeFragment.Companion.IS_PRODUCT_SCAN
+import com.example.traction6.ResultActivity
+import com.example.traction6.ScanBarcodeFragment
+import com.example.traction6.ScanBarcodeFragment.Companion.IS_PRODUCT_SCAN
 import com.example.traction6.main.progressScreen.progressAlert
 import com.example.traction6.main.progressScreen.progressScreen
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -51,7 +49,7 @@ open class ActionFragment(val coroutineContext: CoroutineContext = Dispatchers.M
         protected fun scanBarcode() {
             startActivityForResult(
                 Intent(context, ResultActivity::class.java)
-                    .putExtra("data", R.id.action_joinFragment_to_scanBarcodeFragment)
+                    .putExtra("data", R.id.action_recyclerViewFragment_to_scanBarcodeFragment2)
                     .putExtra(IS_PRODUCT_SCAN, true),
                 SCAN_BARCODE
             )
@@ -71,7 +69,7 @@ open class ActionFragment(val coroutineContext: CoroutineContext = Dispatchers.M
         }
 
         override fun onScanResultReady(barcode: String) {
-            startActivityForResult(
+           startActivityForResult(
                 Intent(context, ResultActivity::class.java)
                     .putExtra("barcode", barcode),
                 SCAN_BARCODE_RESULT

@@ -1,23 +1,61 @@
 package com.example.traction6.factory
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
-import com.example.traction6.factory.`interface`.FactoryEventListener
-import com.example.traction6.factory.uiField.UIField
+import com.example.traction6.R
+import kotlinx.android.synthetic.main.recyclerview_row.view.*
 
-open class UIFactoryAdapter(
-    private val uiModels: MutableList<UIField>,
-    private var factoryEventListener: FactoryEventListener? = null
-) : RecyclerView.Adapter<UIFactoryViewHolder>(){
+
+open class UIFactoryAdapter(private var items: ArrayList<String>) : RecyclerView.Adapter<UIFactoryAdapter.MyViewHolder>(){
+//open class UIFactoryAdapter(private var uiModels: MutableList<UIField>): RecyclerView.Adapter<UIFactoryAdapter.MyViewHolder>(){
+
+
+    fun setListData(data: ArrayList<String>) {
+        this.items = data
+    }
+   //private var items = ArrayList<String>()
+       // this.items = data
+      // this.uiModels = data
+    //var items = ArrayList<String>
+
+   // }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+     val inflater = LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_row,parent, false)
+
+        return MyViewHolder(inflater)
+    }
+
+    override fun getItemCount(): Int {
+        return items.size
+    }
+
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        holder.bind(items[position] )
+    }
+
+
+    class MyViewHolder(view: View): RecyclerView.ViewHolder(view){
+
+        val tvBarcode = view.tvcode
+
+        fun bind(code: String){
+            tvBarcode.text = code
+
+        }
+    }
+}
+/*open class UIFactoryAdapter(
+        private val uiModels: MutableList<UIField>,
+        private var factoryEventListener: FactoryEventListener? = null,
+) : RecyclerView.Adapter<UIFactoryViewHolder>() {
 
 
     private var onBind: Boolean = false
 
     private val uiModelsData: MutableList<UIField> = arrayListOf()
-
 
     override fun getItemViewType(position: Int): Int {
         return uiModels[position].layout
@@ -45,7 +83,7 @@ open class UIFactoryAdapter(
         this.factoryEventListener = factoryEventListener
     }
 
-    fun updateUI(uiModels: MutableList<UIField>) {
+    fun updateProduct(uiModels: MutableList<UIField>) {
         this.uiModelsData.clear()
         this.uiModels.clear()
         this.uiModelsData.addAll(uiModels)
@@ -53,7 +91,21 @@ open class UIFactoryAdapter(
         notifyDataSetChanged()
     }
 
-
+    fun addToList(newUiModels: MutableList<UIField>, currentPage: Int) {
+        if (currentPage <= 1) {
+            this.uiModelsData.clear()
+            this.uiModels.clear()
+            this.uiModelsData.addAll(newUiModels)
+            this.uiModels.addAll(newUiModels)
+            notifyDataSetChanged()
+        } else {
+            val initPosition = uiModels.size
+            uiModels.addAll(newUiModels)
+            uiModelsData.clear()
+            uiModelsData.addAll(uiModels)
+            notifyItemRangeInserted(initPosition, uiModels.size)
+        }
+    }
 
     fun items(): MutableList<UIField> {
         return uiModels
@@ -96,7 +148,6 @@ open class UIFactoryAdapter(
         }
         return data
     }
+}*/
 
 
-
-}

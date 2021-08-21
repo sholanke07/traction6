@@ -18,14 +18,24 @@
             app:exitAnim="@anim/slide_out_to_left"
             />
         <action
-            android:id="@+id/action_joinFragment_to_scanBarcodeFragment"
-            app:destination="@id/scanBarcodeFragment" />
+            android:id="@+id/action_joinFragment_to_recyclerViewFragment"
+            app:destination="@id/recyclerViewFragment"
+            app:popEnterAnim="@anim/slide_in_to_left"
+            app:popExitAnim="@anim/slide_out_to_right"
+            app:enterAnim="@anim/slide_in_to_right"
+            app:exitAnim="@anim/slide_out_to_left"
+            />
+
+
 
     </fragment>
+
+
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.traction6.Onboarding.auth.LoginFragment"
         android:label="LoginFragment" >
+
         <action
             android:id="@+id/action_loginFragment_to_recyclerViewFragment"
             app:destination="@id/recyclerViewFragment"
@@ -34,21 +44,25 @@
             app:enterAnim="@anim/slide_in_to_right"
             app:exitAnim="@anim/slide_out_to_left"
             />
-
     </fragment>
     <fragment
         android:id="@+id/recyclerViewFragment"
         android:name="com.example.traction6.RecyclerViewFragment"
         android:label="fragment_recycler_view">
+
+
         <action
-            android:id="@+id/action_recyclerViewFragment_to_scanBarcodeFragment"
-            app:destination="@id/scanBarcodeFragment" />
+            android:id="@+id/action_recyclerViewFragment_to_scanBarcodeFragment2"
+            app:destination="@id/scanBarcodeFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/scanBarcodeFragment2"
+        android:name="com.example.traction6.ScanBarcodeFragment"
+        android:label="ScanBarcodeFragment" >
+        <action
+            android:id="@+id/action_scanBarcodeFragment2_to_recyclerViewFragment"
+            app:destination="@id/recyclerViewFragment" />
     </fragment>
 
-
-    <fragment
-        android:id="@+id/scanBarcodeFragment"
-        android:name="com.example.traction6.main.ScanBarcodeFragment"
-        android:label="ScanBarcodeFragment" />
 
 </navigation>

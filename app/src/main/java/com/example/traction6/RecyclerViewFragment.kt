@@ -1,269 +1,268 @@
 package com.example.traction6
 
-import android.app.Activity
-import android.content.Intent
+
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DividerItemDecoration
-import com.example.domain.exts.observe
-import com.example.domain.exts.withViewModel
-import com.example.traction6.factory.`interface`.FactoryEventAdapter
-import com.example.traction6.factory.uiField.BarcodeField
-import com.example.traction6.factory.uiField.UIField
-import com.example.traction6.main.ScanBarcodeFragment
-import com.example.traction6.main.sharedSceens.PagesFragment
-import com.example.traction6.main.sharedSceens.ResultActivity
-import com.example.traction6.main.vms.ProductVMFactory
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.traction6.Onboarding.auth.viewModels.NewViewModel
+import com.example.traction6.Onboarding.auth.viewModels.NewViewModelFactory
+import com.example.traction6.factory.UIFactoryAdapter
 import com.example.traction6.main.vms.ProductsVM
+
 import kotlinx.android.synthetic.main.fab.*
 import kotlinx.android.synthetic.main.fragment_recyclerview.*
-import pub.devrel.easypermissions.EasyPermissions
+import kotlin.collections.ArrayList
 
-//import pub.devrel.easypermissions.RationaleDialogFragmentCompat.TAG
+import kotlin.system.exitProcess
 
 
-class RecyclerViewFragment :  PagesFragment(), EasyPermissions.PermissionCallbacks {
-    val RC_STORAGE = 1
+class RecyclerViewFragment : Fragment() {
 
-   // private val RC_CAMERA_PERM = 123
-
+    lateinit var uiFactoryAdapter: UIFactoryAdapter
     private var productsVM: ProductsVM? = null
+    private var itemListener: CreateProductCallback? = null
+    private lateinit var viewModel: NewViewModel
+    private lateinit var viewModelFactory: NewViewModelFactory
 
-    //var myList = ArrayList<String>()
+    var myList = ArrayList<String>()
 
-     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
-       activity?.onBackPressed()
-   }
+    /*init {
 
-   override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
-       ui()
-   }
+        val scanBarcodeFragment = ScanBarcodeFragment()
+        scanBarcodeFragment.setScannerListener(this)
+        scanBarcodeFragment.listener
+    }*/
+
+    /* companion object {
+        val TAG: String = RecyclerViewFragment::class.java.simpleName
+        var id = ""
+
+        fun newInstance(listener: CreateProductCallback): RecyclerViewFragment {
+            val arg = Bundle().apply {
+                putSerializable(Constants.DATA_KEY, id)
+            }
+
+            return RecyclerViewFragment().apply {
+                setCreateProductListener(listener)
+                arguments = arg
+            }
+        }
+    }*/
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_recyclerview, container, false)
+        val view = inflater.inflate(R.layout.fragment_recyclerview, container, false)
+        return view
+
     }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        EasyPermissions.requestPermissions(
-                /*this,
-                getString(R.string.rationale_storage),
-                RC_STORAGE,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                android.Manifest.permission.CAMERA*/
+        viewModelFactory = NewViewModelFactory()
+        val factory = NewViewModelFactory()
+        viewModel = ViewModelProvider(this, factory).get(NewViewModel::class.java)
 
-                this, getString(R.string.rationale_storage),
-                RC_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE
-                , android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.CAMERA
-        )
-        //activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        initRecyclerView(view)
+        //initViewModel()
+        //stringToWords(mnemonic = String())
 
-       // val myAdapter = ListAdapter(requireContext(), myList)
+        // ui()
 
-        /*factory_recycler.adapter = myAdapter
-        factory_recycler.layoutManager = LinearLayoutManager(requireContext())
-        val decorator = DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
-        factory_recycler.addItemDecoration(decorator)
-        myAdapter.notifyDataSetChanged()*/
-
-
-
-    }
-
-
-    private fun ui() {
-        factory_recycler.addItemDecoration(
-            DividerItemDecoration(
-                activity,
-                DividerItemDecoration.VERTICAL
-            )
-        )
         fab_create.setOnClickListener {
-            // Navigation.findNavController(it).navigate(R.id.action_recyclerViewFragment_to_countingFragment)
-            scanBarcode()
-            // cameraTask()
-
-
+            Navigation.findNavController(it)
+                    .navigate(R.id.action_recyclerViewFragment_to_scanBarcodeFragment2)
         }
+        val preferences =
+                this.requireActivity().getSharedPreferences("pref", Context.MODE_PRIVATE)
+        val barcode = preferences.getString("newcode", " ")
+        val item = ArrayList<String>()
+       if (barcode != null) {
+            item.add(barcode)
+            uiFactoryAdapter?.setListData(item)
+            uiFactoryAdapter?.notifyDataSetChanged()
+            /* val preferences =
+                this.requireActivity().getSharedPreferences("pref", Context.MODE_PRIVATE)
+        val barcode = preferences.getString("code", " ")
+        var ret = barcode
+        var retmake = ret + barcode
+        val item = ArrayList<String>()
+        if (retmake != null) {
+            item.add(retmake)
+            uiFactoryAdapter?.setListData(item)
+            uiFactoryAdapter?.notifyDataSetChanged()*/
 
 
-        // itemListener?.onSaveProductItem(factoryItemsAdapter)
-        productsVM = withViewModel(ProductVMFactory) {
-            //createProductForm(tractionProducts)
-            observe(uiFields, ::updateUIFields)
-           // observe(productCreate, ::productCreationUpdate)
-        }
-
-        factoryItemsAdapter.setEventAdapter(object : FactoryEventAdapter() {
-
-            //filling items info and clicking
-            override fun onItemClicked(uiField: UIField, params: Any) {
-                when (uiField) {
-                    is BarcodeField -> {
-                        scanBarcode()
-
-                    }
-                }
-            }
-        })
-    }
-
-            // for the scan code, to scan or generate barcode showing dialog
-           /* private fun showBarcodeDialog() {
-        val dialog = Dialog(requireContext(), android.R.style.Theme_Translucent).also {
-            it.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            val view =
-                LayoutInflater.from(context).inflate(R.layout.dialog_barcode_action, null, false)
-                    .apply {
-                        btn_generate_code.setOnClickListener { _ ->
-                            showProgress()
-                          //  productsVM?.generateBarcode()
-                            it.dismiss()
-                        }
-                        fab_create.setOnClickListener { _ ->
-                            Toast.makeText(requireContext(), "Hello", Toast.LENGTH_SHORT).show()
-                            it.dismiss()
-                            Toast.makeText(requireContext(), "Hello", Toast.LENGTH_SHORT).show()
-                            scanBarcode()
-
-                        }
-                        container.setOnClickListener { _ ->
-                            it.dismiss()
-                        }
-                    }
-            it.setContentView(view)
-        }
-        dialog.show()
-    }*/
-
-   /* private fun hasCameraPermission():Boolean {
-        return EasyPermissions.hasPermissions(requireContext(), Manifest.permission.CAMERA)
-    }
-    fun cameraTask() {
-        if (hasCameraPermission())
-        {
-            val integrator = IntentIntegrator.forSupportFragment(this)
-
-            integrator.setOrientationLocked(true)
-            integrator.setPrompt("Scan QR code")
-            integrator.setBeepEnabled(true)
-            integrator.setCameraId(0)
-           // integrator.captureActivity = AnyOrientationCaptureActivity::class.java
-            integrator.setOrientationLocked(true)
-           // integrator.setDesiredBarcodeFormats(IntentIntegrator.PRODUCT_CODE_TYPES)
-            integrator.initiateScan()
-
-        }
-        else
-        {
-            // Ask for one permission
-            EasyPermissions.requestPermissions(
-                    this,
-                    getString(R.string.rationale_camera),
-                    RC_CAMERA_PERM,
-                    Manifest.permission.CAMERA
-            )
-        }
-    }
-    override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<String>,
-            grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        // EasyPermissions handles the request result.
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
-    }
-
-    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
-        Log.d(TAG, "onPermissionsDenied:" + requestCode + ":" + perms.size)
-        activity?.onBackPressed()
-
-        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms))
-        {
-            AppSettingsDialog.Builder(this).build().show()
-        }
-    }
-
-    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
-        Log.d(TAG, "onPermissionsGranted:" + requestCode + ":" + perms.size)
-       // ui()
-    }
-
-    @SuppressLint("StringFormatMatches")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-
-        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-        if (result != null) {
-            if (result.contents == null) {
-                Toast.makeText(requireContext(), "cancelled", Toast.LENGTH_SHORT).show()
-            } else {
-                Log.d("RecyclerViewFragment", "Scanned")
-                Toast.makeText(requireContext(), "Scanned -> " + result.contents, Toast.LENGTH_SHORT)
-                        .show()
-                //testTV.text = String.format( "%s", result)
-                testTV.text = String.format(result.contents)
-                //myList.add(testTV.toString())
-
+            btnSave.setOnClickListener {
+                Toast.makeText(requireContext(), "All Items Saved" + " ", Toast.LENGTH_SHORT).show()
 
             }
-        }else{
-            super.onActivityResult(requestCode, resultCode, data)
+
+            activity?.onBackPressedDispatcher?.addCallback(
+                    requireActivity(),
+                    object : OnBackPressedCallback(
+                            true
+                    ) {
+                        override fun handleOnBackPressed() {
+                            //if(isInterceptBackPress()){
+                            //  do your work here
+                            //  if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                            isEnabled = false
+                            exitProcess(1)
+                            activity?.onBackPressed()
+                            // } else {
+                            // Toast.makeText(requireContext(), "press backpress again to exit app", Toast.LENGTH_SHORT).show()
+
+                            // }
+                            // backPressedTime = System.currentTimeMillis()
+                        }
+                    })
+
+        }
+    }
+
+
+
+    private fun initRecyclerView(view: View) {
+        factory_recycler.layoutManager = LinearLayoutManager(activity)
+       // val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        //factory_recycler.addItemDecoration(divider)
+        uiFactoryAdapter = UIFactoryAdapter(myList)
+        factory_recycler.adapter = uiFactoryAdapter
+
+    }
+    /*private fun stringToWords(mnemonic: String): List<String> {
+        val preferences =
+                this.requireActivity().getSharedPreferences("pref", Context.MODE_PRIVATE)
+        val barcode = preferences.getString("code", " ")
+        val item = ArrayList<String>()
+        if (barcode != null){
+            item.add(barcode)
+            for (ret in mnemonic.trim(' ').split(" ")){
+                if (ret.isNotEmpty())
+                    item.add(ret)
+            }
+            uiFactoryAdapter?.notifyDataSetChanged()
+
+        }
+        return item
+    }*/
+
+}
+
+
+    /* override fun onScanResultReady(barcode: String) {
+       // welcome.setText(barcode)
+       // if (barcode == null) {
+           // Toast.makeText(requireContext(), "No", Toast.LENGTH_SHORT).show()
+      //  }else{
+           // Toast.makeText(requireContext(), "Yes", Toast.LENGTH_SHORT).show()
+       // welcome.setText(barcode)
+      val item = ArrayList<String>()
+        if (barcode != null) {
+           item.add(barcode)
+            //uiFactoryAdapter.setListData(item)
+            uiFactoryAdapter.notifyDataSetChanged()
+       }
+    }*/
+
+   /* fun initViewModel() {
+        // viewModel = ViewModelProvider(this).get(NewViewModel::class.java)
+        // viewModel.getUserListObserverable().observe(
+        //   {
+        val preferences =
+                this.requireActivity().getSharedPreferences("pref", Context.MODE_PRIVATE)
+        val barcode = preferences.getString("code", " ")
+        val item = ArrayList<String>()
+        if (barcode != null) {
+            item.add(barcode)
+            uiFactoryAdapter?.setListData(item)
+            uiFactoryAdapter?.notifyDataSetChanged()
+
+        }
+        // },
+        // )
+        //  viewModel.getUserList()
+
+    }*/
+
+
+  /*  private fun ui() {
+        factory_recycler.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
+        arguments?.getSerializable("data")?.let {
+            // tractionProducts = it as TractionProducts
         }
     }*/
 
-
-        /*if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE)
-        {
-            val yes = getString(R.string.yes)
-            val no = getString(R.string.no)
-
-
-
-            // Do something after user returned from app settings screen, like showing a Toast.
-           /* Toast.makeText(
-                requireContext(), getString(R.string.returned_from_app_settings_to_activity,
-                    if (hasCameraPermission()) yes else no,
-                    Toast.LENGTH_LONG).show()*/
-        }*/
-
-   /* override fun onRationaleAccepted(requestCode:Int) {
-        Log.d(TAG, "onRationaleAccepted:" + requestCode)
-    }
-    override fun onRationaleDenied(requestCode:Int) {
-        Log.d(TAG, "onRationaleDenied:" + requestCode)
-    }*/
-
-
-    // getting barcode result
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+   /* override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (requestCode == SCAN_BARCODE && resultCode == Activity.RESULT_OK) {
             passBarcodeToView(data?.getStringExtra("data")!!)
         }
+
     }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
-    }
-
-
 
     private fun passBarcodeToView(barcode: String) {
         productsVM?.updateBarcodeField(factoryItemsAdapter, barcode)
-
     }
 
+    fun setCreateProductListener(listener: CreateProductCallback) {
+        itemListener = listener
+    }*/
 
+
+
+
+
+
+
+//finishAffinity()
+//moveTaskToBack(true)
+// exitProcess(-1)
+
+
+/*fun onBackPassed(){
+ if (backPressedTime + 2000 > System.currentTimeMillis()){
+    //super.onBackPassed()
+}else{
+    Toast.makeText(requireContext(), "press backpress again to exit app", Toast.LENGTH_SHORT).show()
 }
+backPressedTime = System.currentTimeMillis()
+}*/
+
+/*class Demo : ScanBarcodeFragment.ScanResultListener {
+    init {
+        val scanBarcodeFragment = ScanBarcodeFragment()
+        scanBarcodeFragment.setScannerListener(this)
+        //scanBarcodeFragment.handleResult()
+    }
+
+    override fun onScanResultReady(barcode: String) {
+
+    }*/
+
+
+
+
+
+
+
+
+
+    
+
+
+

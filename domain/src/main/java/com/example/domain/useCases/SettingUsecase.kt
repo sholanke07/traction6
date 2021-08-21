@@ -2,6 +2,6 @@ package com.example.domain.useCases
 
 import io.reactivex.Completable
 
-/*interface SettingUsecase {
+interface SettingUsecase {
     fun logout(): Completable
-}*/
+}

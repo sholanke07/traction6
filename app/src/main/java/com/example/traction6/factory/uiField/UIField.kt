@@ -7,6 +7,7 @@ abstract class UIField (
     val layout: Int,
     var key: String = "",
     var errorMessage: String = "",
+    val code: String = "",
     var dataSource: Any = Any()
     ) {
 

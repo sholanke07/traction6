@@ -1,5 +1,6 @@
 package com.example.traction6.factory.uiField
 
+import android.content.Context
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.example.traction6.R
@@ -13,9 +14,10 @@ class BarcodeField (
     var hint: String = "",
     var text: String = ""
     ) :
-    UIField(R.layout.fragment_recyclerview) {
+    UIField(R.layout.recyclerview_row) {
 
-    override fun getValue(): Any {
+
+     override fun getValue(): Any {
         return text
     }
 
@@ -25,9 +27,8 @@ class BarcodeField (
 
 
     override fun bind(itemView: View, factoryEventListener: FactoryEventListener?) {
-        // itemView.testTV2.hint = hint
-        itemView.testTV2.setText(text)
-        itemView.testTV2.addTextChangedListener(object : TextWatcherAdapter() {
+        itemView.tvcode.setText(text)
+        itemView.tvcode.addTextChangedListener(object : TextWatcherAdapter() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 super.onTextChanged(s, start, before, count)
                 s?.let {
@@ -36,9 +37,9 @@ class BarcodeField (
             }
         })
 
-        itemView.fab_create.setOnClickListener {
+       /*itemView.fab_create.setOnClickListener {
             factoryEventListener?.onItemClicked(this)
-        }
+        }*/
 
     }
 }
