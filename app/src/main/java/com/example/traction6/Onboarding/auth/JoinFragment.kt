@@ -46,7 +46,7 @@ class JoinFragment() : Fragment() {
 
     private fun appGetFirstTimeRun() {
         //Check if App Start First Time
-        val appPreferences: SharedPreferences = requireContext().getSharedPreferences("MyAPP", 0)
+        val appPreferences: SharedPreferences = requireContext().getSharedPreferences("correct", 0)
         val appCurrentBuildVersion: Int = BuildConfig.VERSION_CODE
         val appLastBuildVersion = appPreferences.getInt("app_first_time", 0)
 

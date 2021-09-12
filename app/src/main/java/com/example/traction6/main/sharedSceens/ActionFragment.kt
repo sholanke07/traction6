@@ -7,15 +7,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.traction6.R
 import com.example.traction6.ResultActivity
 import com.example.traction6.ScanBarcodeFragment
-import com.example.traction6.ScanBarcodeFragment.Companion.IS_PRODUCT_SCAN
+//import com.example.traction6.ScanBarcodeFragment.Companion.IS_PRODUCT_SCAN
 import com.example.traction6.main.progressScreen.progressAlert
 import com.example.traction6.main.progressScreen.progressScreen
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
 import kotlin.coroutines.CoroutineContext
 
-open class ActionFragment(val coroutineContext: CoroutineContext = Dispatchers.Main) : Fragment(),
-    ScanBarcodeFragment.ScanResultListener{
+open class ActionFragment(val coroutineContext: CoroutineContext = Dispatchers.Main) : Fragment(){
+    //ScanBarcodeFragment.ScanResultListener{
 
 
         protected val REQUEST_CAPTURE_IMAGE = 100
@@ -46,14 +46,14 @@ open class ActionFragment(val coroutineContext: CoroutineContext = Dispatchers.M
             }
         }
 
-        protected fun scanBarcode() {
+       /* protected fun scanBarcode() {
             startActivityForResult(
                 Intent(context, ResultActivity::class.java)
-                    .putExtra("data", R.id.action_recyclerViewFragment_to_scanBarcodeFragment2)
+                    .putExtra("data", R.id.action_recyclerViewFragment_to_scanBarcodeFragment)
                     .putExtra(IS_PRODUCT_SCAN, true),
                 SCAN_BARCODE
             )
-        }
+        }*/
 
         protected fun setupRecyclerFabScrollListener(recyclerView: RecyclerView, fab: FloatingActionButton) {
             recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -68,13 +68,13 @@ open class ActionFragment(val coroutineContext: CoroutineContext = Dispatchers.M
             })
         }
 
-        override fun onScanResultReady(barcode: String) {
+      /* override fun onScanResultReady(barcode: String) {
            startActivityForResult(
                 Intent(context, ResultActivity::class.java)
                     .putExtra("barcode", barcode),
                 SCAN_BARCODE_RESULT
             )
-        }
+        }*/
 
 
     }

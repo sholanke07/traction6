@@ -3,12 +3,14 @@ package com.example.traction6.Onboarding.auth
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
@@ -23,8 +25,11 @@ import com.example.domain.states.authSuccess
 import com.example.traction6.Onboarding.auth.viewModels.AuthVM
 import com.example.traction6.Onboarding.auth.viewModels.AuthVMFactory
 import com.example.traction6.R
+import com.example.traction6.exts.passwordToggle
+import com.example.traction6.recycler.newrecycler
 import com.jakewharton.rxbinding.widget.RxTextView
 import kotlinx.android.synthetic.main.fragment_login.*
+import kotlinx.android.synthetic.main.fragment_newrecycler.*
 import rx.Observable
 import java.util.regex.Pattern
 
@@ -48,6 +53,7 @@ class LoginFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_login, container, false)
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -59,6 +65,10 @@ class LoginFragment : Fragment() {
 
             authVM?.authUser(email_field.text.toString(), password.text.toString())
 
+        }
+
+        iv_show_hide_toggle.setOnClickListener {
+            it.passwordToggle(password, iv_show_hide_toggle)
         }
 
         btn_back.setOnClickListener {
@@ -92,8 +102,11 @@ class LoginFragment : Fragment() {
                     progressDialog.dismiss()
                     AppPref.isAuth = true
 
+                    //Navigation.findNavController(signIn)
+                           // .navigate(R.id.action_loginFragment_to_recyclerViewFragment)
                     Navigation.findNavController(signIn)
-                            .navigate(R.id.action_loginFragment_to_recyclerViewFragment)
+                    .navigate(R.id.action_loginFragment_to_recyclerViewFragment)
+
                 }
 
                 //if authentication is failed will show error message

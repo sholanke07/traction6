@@ -26,8 +26,6 @@
             app:exitAnim="@anim/slide_out_to_left"
             />
 
-
-
     </fragment>
 
 
@@ -44,6 +42,9 @@
             app:enterAnim="@anim/slide_in_to_right"
             app:exitAnim="@anim/slide_out_to_left"
             />
+        <action
+            android:id="@+id/action_loginFragment_to_newrecycler"
+            app:destination="@id/newrecycler" />
     </fragment>
     <fragment
         android:id="@+id/recyclerViewFragment"
@@ -52,17 +53,26 @@
 
 
         <action
-            android:id="@+id/action_recyclerViewFragment_to_scanBarcodeFragment2"
-            app:destination="@id/scanBarcodeFragment2" />
+            android:id="@+id/action_recyclerViewFragment_to_scanBarcodeFragment"
+            app:destination="@id/scanBarcodeFragment" />
+
     </fragment>
     <fragment
-        android:id="@+id/scanBarcodeFragment2"
+        android:id="@+id/scanBarcodeFragment"
         android:name="com.example.traction6.ScanBarcodeFragment"
         android:label="ScanBarcodeFragment" >
-        <action
-            android:id="@+id/action_scanBarcodeFragment2_to_recyclerViewFragment"
-            app:destination="@id/recyclerViewFragment" />
+
     </fragment>
+    <fragment
+        android:id="@+id/dataBaseFragment"
+        android:name="com.example.traction6.DataBaseFragment"
+        android:label="fragment_data_base"
+        tools:layout="@layout/fragment_data_base" />
+    <fragment
+        android:id="@+id/newrecycler"
+        android:name="com.example.traction6.recycler.newrecycler"
+        android:label="fragment_newrecycler"
+        tools:layout="@layout/fragment_newrecycler" />
 
 
 </navigation>

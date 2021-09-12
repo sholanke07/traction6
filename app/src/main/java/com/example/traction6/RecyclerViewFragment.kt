@@ -1,66 +1,66 @@
 package com.example.traction6
 
 
-import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.app.ActivityCompat.recreate
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.traction6.Onboarding.auth.viewModels.NewViewModel
-import com.example.traction6.Onboarding.auth.viewModels.NewViewModelFactory
+import androidx.room.Room
+import com.example.data.Dao.CodeDao
+import com.example.data.Entities.BarcodeUsers
+import com.example.data.app.RoomDB.RoomApp
+//import com.example.traction6.Onboarding.auth.viewModels.NewViewModel
+import com.example.traction6.Onboarding.auth.viewModels.SharedViewModel
+//import com.example.traction6.Onboarding.auth.viewModels.NewViewModel
+//import com.example.traction6.Onboarding.auth.viewModels.NewViewModelFactory
 import com.example.traction6.factory.UIFactoryAdapter
 import com.example.traction6.main.vms.ProductsVM
+import com.example.traction6.recycler.Adapter
 
 import kotlinx.android.synthetic.main.fab.*
 import kotlinx.android.synthetic.main.fragment_recyclerview.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlin.collections.ArrayList
+import kotlin.concurrent.thread
 
 import kotlin.system.exitProcess
 
 
 class RecyclerViewFragment : Fragment() {
 
-    lateinit var uiFactoryAdapter: UIFactoryAdapter
+    companion object {
+        const val TAG = "RecyclerViewFragment"
+    }
+
+    private lateinit var madapter: Adapter
+
+    var uiFactoryAdapter: UIFactoryAdapter? = null
     private var productsVM: ProductsVM? = null
     private var itemListener: CreateProductCallback? = null
-    private lateinit var viewModel: NewViewModel
-    private lateinit var viewModelFactory: NewViewModelFactory
 
-    var myList = ArrayList<String>()
+    lateinit var locaDb: RoomApp
+    lateinit var adapter: UIFactoryAdapter
+    private val listData: ArrayList<BarcodeUsers> = ArrayList()
 
-    /*init {
 
-        val scanBarcodeFragment = ScanBarcodeFragment()
-        scanBarcodeFragment.setScannerListener(this)
-        scanBarcodeFragment.listener
-    }*/
-
-    /* companion object {
-        val TAG: String = RecyclerViewFragment::class.java.simpleName
-        var id = ""
-
-        fun newInstance(listener: CreateProductCallback): RecyclerViewFragment {
-            val arg = Bundle().apply {
-                putSerializable(Constants.DATA_KEY, id)
-            }
-
-            return RecyclerViewFragment().apply {
-                setCreateProductListener(listener)
-                arguments = arg
-            }
-        }
-    }*/
+    // lateinit var newViewModel: NewViewModel
+    // val item = ArrayList<String>()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_recyclerview, container, false)
@@ -68,191 +68,123 @@ class RecyclerViewFragment : Fragment() {
 
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModelFactory = NewViewModelFactory()
-        val factory = NewViewModelFactory()
-        viewModel = ViewModelProvider(this, factory).get(NewViewModel::class.java)
 
-        initRecyclerView(view)
-        //initViewModel()
-        //stringToWords(mnemonic = String())
-
-        // ui()
 
         fab_create.setOnClickListener {
+
             Navigation.findNavController(it)
-                    .navigate(R.id.action_recyclerViewFragment_to_scanBarcodeFragment2)
+                    .navigate(R.id.action_recyclerViewFragment_to_scanBarcodeFragment)
+
         }
-        val preferences =
-                this.requireActivity().getSharedPreferences("pref", Context.MODE_PRIVATE)
-        val barcode = preferences.getString("newcode", " ")
-        val item = ArrayList<String>()
-       if (barcode != null) {
-            item.add(barcode)
-            uiFactoryAdapter?.setListData(item)
-            uiFactoryAdapter?.notifyDataSetChanged()
-            /* val preferences =
-                this.requireActivity().getSharedPreferences("pref", Context.MODE_PRIVATE)
-        val barcode = preferences.getString("code", " ")
-        var ret = barcode
-        var retmake = ret + barcode
-        val item = ArrayList<String>()
-        if (retmake != null) {
-            item.add(retmake)
-            uiFactoryAdapter?.setListData(item)
-            uiFactoryAdapter?.notifyDataSetChanged()*/
+
+        locaDb = RoomApp.getAppDatabase(requireContext())!!
+        adapter = UIFactoryAdapter(requireActivity(), listData)
+
+        factory_recycler.adapter = adapter
+        factory_recycler.layoutManager = LinearLayoutManager(requireContext())
+        val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        factory_recycler.addItemDecoration(divider)
 
 
-            btnSave.setOnClickListener {
-                Toast.makeText(requireContext(), "All Items Saved" + " ", Toast.LENGTH_SHORT).show()
+         listData.clear()
+        thread {
+            listData.addAll(locaDb.codeDao()?.getAllUserInfo()!!)
+            runOnUiThread {
+                Runnable {
+                    Toast.makeText(requireContext(), "$listData", Toast.LENGTH_SHORT).show()
 
+                    adapter.notifyDataSetChanged()
+                }
             }
-
-            activity?.onBackPressedDispatcher?.addCallback(
-                    requireActivity(),
-                    object : OnBackPressedCallback(
-                            true
-                    ) {
-                        override fun handleOnBackPressed() {
-                            //if(isInterceptBackPress()){
-                            //  do your work here
-                            //  if (backPressedTime + 2000 > System.currentTimeMillis()) {
-                            isEnabled = false
-                            exitProcess(1)
-                            activity?.onBackPressed()
-                            // } else {
-                            // Toast.makeText(requireContext(), "press backpress again to exit app", Toast.LENGTH_SHORT).show()
-
-                            // }
-                            // backPressedTime = System.currentTimeMillis()
-                        }
-                    })
-
         }
-    }
 
 
 
-    private fun initRecyclerView(view: View) {
-        factory_recycler.layoutManager = LinearLayoutManager(activity)
-       // val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-        //factory_recycler.addItemDecoration(divider)
-        uiFactoryAdapter = UIFactoryAdapter(myList)
+
+
+        /* factory_recycler.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            uiFactoryAdapter = UIFactoryAdapter(myList)
+            adapter = uiFactoryAdapter
+            val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+            addItemDecoration(divider)
+        }*/
+        // val item = ArrayList<BarcodeUsers>()
+        // val model = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+        // model.message.observe(viewLifecycleOwner, Observer {
+
+        // item.add(it)
+
+
+        // newViewModel = ViewModelProviders.of(this).get(NewViewModel::class.java)
+        // newViewModel.getAllUsersObservers().observe(requireActivity(), androidx.lifecycle.Observer {
+        //item.add(myList)
+        /*uiFactoryAdapter?.setListData(item)
+            uiFactoryAdapter?.notifyDataSetChanged()
+            Toast.makeText(requireContext(), "$item", Toast.LENGTH_SHORT).show()*/
+
+
+        // val model = ViewModelProviders.of(requireActivity()).get(SharedViewModel::class.java)
+
+        //model.message.observe(viewLifecycleOwner, object : Observer<String> {
+        //   override fun onChanged(barcode: String?) {
+
+
+        //madapter = Adapter(myView)
+
+        /*  val layoutManager = LinearLayoutManager(requireContext())
+        factory_recycler.layoutManager = layoutManager
+        val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        factory_recycler.addItemDecoration(divider)
         factory_recycler.adapter = uiFactoryAdapter
+        val item = ArrayList<String>()*/
+        //if (myList != null) {
+        // item.add(myList.toString())
+        // uiFactoryAdapter = UIFactoryAdapter(item)
+
+
+        // uiFactoryAdapter = UIFactoryAdapter(myList)
+        // uiFactoryAdapter.setListData(myList)
+        //uiFactoryAdapter.notifyDataSetChanged()
+        //}
+
+
+        btnSave.setOnClickListener {
+            Toast.makeText(requireContext(), "All Data Saved", Toast.LENGTH_SHORT).show()
+        }
+
+
+
+        activity?.onBackPressedDispatcher?.addCallback(
+                requireActivity(),
+                object : OnBackPressedCallback(
+                        true
+                ) {
+                    override fun handleOnBackPressed() {
+                        //if(isInterceptBackPress()){
+                        //  do your work here
+                        //  if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                        isEnabled = false
+                        exitProcess(1)
+                        activity?.onBackPressed()
+
+                    }
+                })
+
+
+
+
 
     }
-    /*private fun stringToWords(mnemonic: String): List<String> {
-        val preferences =
-                this.requireActivity().getSharedPreferences("pref", Context.MODE_PRIVATE)
-        val barcode = preferences.getString("code", " ")
-        val item = ArrayList<String>()
-        if (barcode != null){
-            item.add(barcode)
-            for (ret in mnemonic.trim(' ').split(" ")){
-                if (ret.isNotEmpty())
-                    item.add(ret)
-            }
-            uiFactoryAdapter?.notifyDataSetChanged()
 
-        }
-        return item
-    }*/
+    private fun runOnUiThread(new: () -> Runnable) {
 
+    }
 }
 
 
-    /* override fun onScanResultReady(barcode: String) {
-       // welcome.setText(barcode)
-       // if (barcode == null) {
-           // Toast.makeText(requireContext(), "No", Toast.LENGTH_SHORT).show()
-      //  }else{
-           // Toast.makeText(requireContext(), "Yes", Toast.LENGTH_SHORT).show()
-       // welcome.setText(barcode)
-      val item = ArrayList<String>()
-        if (barcode != null) {
-           item.add(barcode)
-            //uiFactoryAdapter.setListData(item)
-            uiFactoryAdapter.notifyDataSetChanged()
-       }
-    }*/
-
-   /* fun initViewModel() {
-        // viewModel = ViewModelProvider(this).get(NewViewModel::class.java)
-        // viewModel.getUserListObserverable().observe(
-        //   {
-        val preferences =
-                this.requireActivity().getSharedPreferences("pref", Context.MODE_PRIVATE)
-        val barcode = preferences.getString("code", " ")
-        val item = ArrayList<String>()
-        if (barcode != null) {
-            item.add(barcode)
-            uiFactoryAdapter?.setListData(item)
-            uiFactoryAdapter?.notifyDataSetChanged()
-
-        }
-        // },
-        // )
-        //  viewModel.getUserList()
-
-    }*/
-
-
-  /*  private fun ui() {
-        factory_recycler.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
-        arguments?.getSerializable("data")?.let {
-            // tractionProducts = it as TractionProducts
-        }
-    }*/
-
-   /* override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == SCAN_BARCODE && resultCode == Activity.RESULT_OK) {
-            passBarcodeToView(data?.getStringExtra("data")!!)
-        }
-
-    }
-
-    private fun passBarcodeToView(barcode: String) {
-        productsVM?.updateBarcodeField(factoryItemsAdapter, barcode)
-    }
-
-    fun setCreateProductListener(listener: CreateProductCallback) {
-        itemListener = listener
-    }*/
-
-
-
-
-
-
-
-//finishAffinity()
-//moveTaskToBack(true)
-// exitProcess(-1)
-
-
-/*fun onBackPassed(){
- if (backPressedTime + 2000 > System.currentTimeMillis()){
-    //super.onBackPassed()
-}else{
-    Toast.makeText(requireContext(), "press backpress again to exit app", Toast.LENGTH_SHORT).show()
-}
-backPressedTime = System.currentTimeMillis()
-}*/
-
-/*class Demo : ScanBarcodeFragment.ScanResultListener {
-    init {
-        val scanBarcodeFragment = ScanBarcodeFragment()
-        scanBarcodeFragment.setScannerListener(this)
-        //scanBarcodeFragment.handleResult()
-    }
-
-    override fun onScanResultReady(barcode: String) {
-
-    }*/
 
 
 

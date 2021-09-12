@@ -23,16 +23,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Traction6"
         tools:replace="android:allowBackup">
-
-        <activity android:name=".AnyOrientationCaptureActivity"
-            android:screenOrientation="sensorPortrait"
-            android:windowSoftInputMode="stateAlwaysHidden">
-
-        </activity>
         <activity
-            android:name=".RecyclerActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
+            android:name=".AnyOrientationCaptureActivity"
+            android:screenOrientation="sensorPortrait"
+            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+
         <activity
             android:name=".ResultActivity"
             android:screenOrientation="portrait"

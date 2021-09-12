@@ -16,24 +16,41 @@ open class ResultActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_result)
 
-         val bundle = intent.extras
+
+
+        //val scanBarcodeFragment = ScanBarcodeFragment()
+        //supportFragmentManager.beginTransaction().replace(R.id.fragment_container, scanBarcodeFragment).commit()
+
+
+
+       /* val bundle = intent.extras
         if (bundle != null ) {
             val barcode = bundle.getString("barcode")
 
             if (barcode != null) {
                 returnBundle(barcode)
             }
-        }
+        }*/
     }
 
-    private fun returnBundle(serializableExtra: Serializable) {
+
+   /* private fun returnBundle(serializableExtra: Serializable) {
         this.setResult(
             Activity.RESULT_OK,
             Intent().putExtra(Constants.DATA_KEY, serializableExtra)
         )
         finish()
-    }
+    }*/
 
-    override fun onSupportNavigateUp() =
-        Navigation.findNavController(this, R.id.nav_graph).navigateUp()
+
+   /* override fun onScanResultReady(barcode: String) {
+        val bundle = Bundle()
+        bundle.putString("message", barcode)
+
+        val transaction = this.supportFragmentManager.beginTransaction()
+        val recyclerViewFragment = RecyclerViewFragment()
+        recyclerViewFragment.arguments = bundle
+        transaction.replace(R.id.fragment_container, recyclerViewFragment)
+        transaction.commit()
+    }*/
 }

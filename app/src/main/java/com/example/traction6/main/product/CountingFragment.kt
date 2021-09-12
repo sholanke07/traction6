@@ -14,7 +14,7 @@ import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.fragment_recyclerview.*
 import kotlin.math.abs
 
-open class CountingFragment: PagesFragment(), ScanBarcodeFragment.ScanResultListener {
+open class CountingFragment: PagesFragment(){
 
     private var isScannerShowing: Boolean = false
     private lateinit var scanBarcodeFragment: ScanBarcodeFragment

@@ -1,16 +1,10 @@
 package com.example.domain.exts
 
-import androidx.lifecycle.MutableLiveData
 import com.example.data.cache.AppPref.token
 import com.example.data.repository.AuthRepository
 //import com.example.data.repository.AuthRepository
-import com.example.domain.states.DataResponseError
-import com.example.domain.states.DataStates
-import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import retrofit2.HttpException
 import java.net.HttpURLConnection
 import java.util.*
